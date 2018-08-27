@@ -32,7 +32,9 @@
     var prefixes = "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX frad: <http://rdvocab.info/ElementsGr2/>";
 
     //Requête SPARQL 
-    var req = "SELECT DISTINCT ?oeuvre (SAMPLE(?depic) as ?fdepic) (SAMPLE(?wDepic) as ?wdepic) WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre dcterms:creator ?person. OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }} ORDER BY RAND()";
+    //(SAMPLE(?depic) as ?fdepic) (SAMPLE(?wDepic) as ?wdepic)
+    //OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }
+    var req = "SELECT DISTINCT ?oeuvre ?pred WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre ?pred ?person.} ORDER BY RAND() LIMIT 500";
 
     $('#laReq').html(prefixes.replace(/</g, '&lt;').replace(/>/g, '&gt;') + " " + req.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
@@ -62,13 +64,13 @@
                 if (i === 0) {
                     nodes.push({
                         id: uri,
-                        depic: oeuvre.fdepic.value,
+                        // depic: oeuvre.fdepic.value,
                         uri: uri,
                         group: "auteur"
                     });
                     nodes.push({
                         id: oeuvre.oeuvre.value,
-                        depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
+                        // depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
                         uri: oeuvre.oeuvre.value,
                         group: "oeuvre"
                     });
@@ -76,13 +78,13 @@
                     nodes.push({
                         id: oeuvre.oeuvre.value,
                         uri: oeuvre.oeuvre.value,
-                        depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
+                        // depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
                         group: "oeuvre"
                     });
                 links.push({
-                    source: uri,
-                    target: oeuvre.oeuvre.value,
-                    value: "Créateur"
+                    source: oeuvre.oeuvre.value,
+                    target: uri,
+                    value: oeuvre.pred.value
                 });
 
             });
@@ -152,6 +154,8 @@
     function drawLink(l) {
         ctx.moveTo(l.source.x, l.source.y);
         ctx.lineTo(l.target.x, l.target.y);
+        // ctx.strokeStyle = color(l.value);
+        // ctx.stroke();
     }
 
     function dragstarted() {
