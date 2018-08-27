@@ -25,14 +25,14 @@
 
     //point de terminaison
     var endpoint = "http://data.bnf.fr/sparql";
-    var uri = "http://data.bnf.fr/ark:/12148/cb118897907"; //=> auteur
+    var uri = "http://data.bnf.fr/ark:/12148/cb11907966z"; //=> auteur
 
     //Préfixes 
     //note: <http://rdvocab.info/ElementsGr2/> est obsolète (FRAD) mais toujours utilisé dans le modèle de données de data.bnf.fr 
     var prefixes = "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX frad: <http://rdvocab.info/ElementsGr2/>";
 
     //Requête SPARQL 
-    var req = "SELECT DISTINCT ?oeuvre (SAMPLE(?depic) as ?fdepic) WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre dcterms:creator ?person. OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }} ORDER BY RAND()";
+    var req = "SELECT DISTINCT ?oeuvre (SAMPLE(?depic) as ?fdepic) (SAMPLE(?wDepic) as ?wdepic) WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre dcterms:creator ?person. OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }} ORDER BY RAND()";
 
     $('#laReq').html(prefixes.replace(/</g, '&lt;').replace(/>/g, '&gt;') + " " + req.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
@@ -99,7 +99,7 @@
 
     function creeGraph(graph) {
 
-        console.log(graph.nodes.length + " nodes");
+        //console.log(graph.nodes.length + " nodes");
 
         simulation
             .nodes(graph.nodes)
@@ -136,8 +136,12 @@
 
     function drawNode(d) {
         ctx.beginPath();
-        // var img = d.depic;
-        // var pat = ctx.createPattern(img, "no-repeat");
+        // var image = new Image();
+        // image.src = d.depic;
+        // image.onload = function() {
+        //     var pat = ctx.createPattern(image, "no-repeat");
+        //     ctx.fillStyle = pat; //color(d.id);
+        // };
         ctx.fillStyle = color(d.id);
         ctx.moveTo(d.x, d.y);
         ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
