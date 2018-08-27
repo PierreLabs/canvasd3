@@ -32,7 +32,7 @@
     var prefixes = "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX frad: <http://rdvocab.info/ElementsGr2/>";
 
     //Requête SPARQL 
-    var req = "SELECT DISTINCT ?oeuvre WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre dcterms:creator ?person.} ORDER BY RAND()";
+    var req = "SELECT DISTINCT ?oeuvre (SAMPLE(?depic) as ?fdepic) WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre dcterms:creator ?person. OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }} ORDER BY RAND()";
 
     $('#laReq').html(prefixes.replace(/</g, '&lt;').replace(/>/g, '&gt;') + " " + req.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
@@ -62,11 +62,13 @@
                 if (i === 0) {
                     nodes.push({
                         id: uri,
+                        depic: oeuvre.fdepic.value,
                         uri: uri,
                         group: "auteur"
                     });
                     nodes.push({
                         id: oeuvre.oeuvre.value,
+                        depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
                         uri: oeuvre.oeuvre.value,
                         group: "oeuvre"
                     });
@@ -74,6 +76,7 @@
                     nodes.push({
                         id: oeuvre.oeuvre.value,
                         uri: oeuvre.oeuvre.value,
+                        depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
                         group: "oeuvre"
                     });
                 links.push({
@@ -133,6 +136,8 @@
 
     function drawNode(d) {
         ctx.beginPath();
+        // var img = d.depic;
+        // var pat = ctx.createPattern(img, "no-repeat");
         ctx.fillStyle = color(d.id);
         ctx.moveTo(d.x, d.y);
         ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
