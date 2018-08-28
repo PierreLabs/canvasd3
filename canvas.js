@@ -34,7 +34,7 @@
     //Requête SPARQL 
     //(SAMPLE(?depic) as ?fdepic) (SAMPLE(?wDepic) as ?wdepic)
     //OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }
-    var req = "SELECT DISTINCT ?oeuvre ?pred WHERE {<" + uri + "> foaf:focus ?person. ?oeuvre ?pred ?person.} ORDER BY RAND() LIMIT 500";
+    var req = "SELECT DISTINCT ?pred ?objet WHERE {<" + uri + "> ?pred ?objet.} ORDER BY RAND() LIMIT 500";
 
     $('#laReq').html(prefixes.replace(/</g, '&lt;').replace(/>/g, '&gt;') + " " + req.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
@@ -61,29 +61,17 @@
 
         if ((oeuvres.results.bindings.length)) { //S'il y a des résultats
             $.each(oeuvres.results.bindings, function(i, oeuvre) {
-                if (i === 0) {
-                    nodes.push({
-                        id: uri,
-                        // depic: oeuvre.fdepic.value,
-                        uri: uri,
-                        group: "auteur"
-                    });
-                    nodes.push({
-                        id: oeuvre.oeuvre.value,
-                        // depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
-                        uri: oeuvre.oeuvre.value,
-                        group: "oeuvre"
-                    });
-                } else
-                    nodes.push({
-                        id: oeuvre.oeuvre.value,
-                        uri: oeuvre.oeuvre.value,
-                        // depic: typeof oeuvre.wdepic !== "undefined" ? oeuvre.wdepic.value : "/img/oeuvre.png",
-                        group: "oeuvre"
-                    });
+                nodes.push({
+                    id: uri,
+                    group: "uri"
+                });
+                nodes.push({
+                    id: oeuvre.objet.value,
+                    group: "objet"
+                });
                 links.push({
-                    source: oeuvre.oeuvre.value,
-                    target: uri,
+                    source: uri,
+                    target: oeuvre.objet.value,
                     value: oeuvre.pred.value
                 });
 
@@ -154,8 +142,6 @@
     function drawLink(l) {
         ctx.moveTo(l.source.x, l.source.y);
         ctx.lineTo(l.target.x, l.target.y);
-        // ctx.strokeStyle = color(l.value);
-        // ctx.stroke();
     }
 
     function dragstarted() {
