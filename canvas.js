@@ -34,7 +34,8 @@
     //Requête SPARQL 
     //(SAMPLE(?depic) as ?fdepic) (SAMPLE(?wDepic) as ?wdepic)
     //OPTIONAL { ?oeuvre foaf:depiction ?wDepic. } OPTIONAL { ?person foaf:depiction ?depic. }
-    var req = "SELECT DISTINCT ?pred ?objet WHERE {<" + uri + "> ?pred ?objet.} ORDER BY RAND() LIMIT 500";
+    var req = "SELECT DISTINCT ?pred ?objet WHERE {<" + uri + "#about> ?pred ?objet. FILTER(!regex(?objet,'thumbnail$','i'))} ORDER BY RAND() LIMIT 500";
+    //var req2 = "SELECT DISTINCT ?sujet ?pred WHERE {<" + uri + "> ?pred ?objet.} ORDER BY RAND() LIMIT 500";
 
     $('#laReq').html(prefixes.replace(/</g, '&lt;').replace(/>/g, '&gt;') + " " + req.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
 
